@@ -1,37 +1,67 @@
-import openai
 import streamlit as st
+import google.generativeai as genai
+import time
+import random
 
-st.title("ChatGPT-like ChatBot")
+st.set_page_config(
+    page_title="Chat with Gemini Pro",
+    page_icon="🔥"
+)
 
-openai.api_key = "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"
+# Predefined Gemini API key
+predefined_api_key = "AIzaSyA0CnorL3jaK9VvI-ebWguoHHrl3oOBl2c"
 
-if "openai_model" not in st.session_state:
-  st.session_state["openai_model"] = "gpt-3.5-turbo"
+st.title("Chat with Gemini Pro")
+st.caption("A Chatbot Powered by Google Gemini Pro")
 
-if "messages" not in st.session_state:
-  st.session_state.messages = []
+# Assign the predefined API key to the session state
+st.session_state.app_key = predefined_api_key
 
-for message in st.session_state.messages:
-  with st.chat_message(message["role"]):
-    st.markdown(message["content"])
+if "history" not in st.session_state:
+    st.session_state.history = []
 
-if prompt := st.chat_input("What is up?"):
-  st.session_state.messages.append({"role": "user", "content": prompt})
-  with st.chat_message("user"):
-    st.markdown(prompt)
+try:
+    genai.configure(api_key=st.session_state.app_key)
+except AttributeError as e:
+    st.warning("Please Put Your Gemini API Key First")
 
-  with st.chat_message("assistant"):
-    message_placeholder = st.empty()
-    full_response = ""
-    for response in openai.ChatCompletion.create(
-      model=st.session_state["openai_model"],
-      messages=[
-        {"role": m["role"], "content": m["content"]}
-        for m in st.session_state.messages
-      ],
-      stream=True,
-    ):
-      full_response += response.choices[0].delta.get("content", "")
-      message_placeholder.markdown(full_response + "▌")
-    message_placeholder.markdown(full_response)
-  st.session_state.messages.append({"role": "assistant", "content": full_response})
+model = genai.GenerativeModel("gemini-pro")
+chat = model.start_chat(history=st.session_state.history)
+
+with st.sidebar:
+    if st.button("Clear Chat Window", use_container_width=True, type="primary"):
+        st.session_state.history = []
+        st.rerun()
+
+for message in chat.history:
+    role = "assistant" if message.role == 'model' else message.role
+    with st.chat_message(role):
+        st.markdown(message.parts[0].text)
+
+if "app_key" in st.session_state:
+    if prompt := st.chat_input(""):
+        prompt = prompt.replace('\n', ' \n')
+        with st.chat_message("user"):
+            st.markdown(prompt)
+        with st.chat_message("assistant"):
+            message_placeholder = st.empty()
+            message_placeholder.markdown("Thinking...")
+            try:
+                full_response = ""
+                for chunk in chat.send_message(prompt, stream=True):
+                    word_count = 0
+                    random_int = random.randint(5, 10)
+                    for word in chunk.text:
+                        full_response += word
+                        word_count += 1
+                        if word_count == random_int:
+                            time.sleep(0.05)
+                            message_placeholder.markdown(full_response + "_")
+                            word_count = 0
+                            random_int = random.randint(5, 10)
+                message_placeholder.markdown(full_response)
+            except genai.types.generation_types.BlockedPromptException as e:
+                st.exception(e)
+            except Exception as e:
+                st.exception(e)
+            st.session_state.history = chat.history
