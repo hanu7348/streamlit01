@@ -3,7 +3,7 @@ import streamlit as st
 
 st.title("ChatGPT-like ChatBot")
 
-openai.api_key = "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"
+openai.api_key = "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"
 
 if "openai_model" not in st.session_state:
   st.session_state["openai_model"] = "gpt-3.5-turbo"
