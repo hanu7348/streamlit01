@@ -4,14 +4,14 @@ import time
 import random
 
 st.set_page_config(
-    page_title="Chat with Gemini Pro",
+    page_title="Chat with Search Creators",
     page_icon="🔥"
 )
 
 # Predefined Gemini API key
 predefined_api_key = "AIzaSyA0CnorL3jaK9VvI-ebWguoHHrl3oOBl2c"
 
-st.title("Chat with Gemini Pro")
+st.title("Chat with Search Creators")
 st.caption("A Chatbot Powered by Google Gemini Pro")
 
 # Assign the predefined API key to the session state
