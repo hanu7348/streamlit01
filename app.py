@@ -10,7 +10,23 @@ st.set_page_config(
 
 # Predefined Gemini API key
 predefined_api_key = "AIzaSyA0CnorL3jaK9VvI-ebWguoHHrl3oOBl2c"
-
+st.markdown(
+    """
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6583411181756440"
+     crossorigin="anonymous"></script>
+<!-- st1 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6583411181756440"
+     data-ad-slot="5862577409"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+    """,
+    unsafe_allow_html=True
+)
 st.title("Chat with Search Creators")
 st.caption("A Chatbot Powered by Google Gemini Pro")
 
